@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Typing Speed</title>
+    <style>
+      * {
+        padding: 0;
+        margin: 0;
+        box-sizing: 0;
+        font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
+          "Lucida Sans", Arial, sans-serif;
+      }
+      .maindiv {
+        width: 100%;
+        height: 100vh;
+        position: relative;
+        background: linear-gradient(to bottom right, #00f0ff, #4b0082);
+      }
+      .center {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+      }
+      h1 {
+        text-transform: capitalize;
+        text-align: center;
+        margin-bottom: 30px;
+        color: blanchedalmond;
+        text-shadow: 1px 1px 3px rgb(137, 226, 43);
+        font-size: 2rem;
+      }
+      h2 {
+        text-align: center;
+        font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS",
+          sans-serif;
+        opacity: 0.2;
+      }
+      textarea {
+        background-color: rgba(50, 50, 50, 0.836);
+        box-shadow: 0 0 2px 2px rgb(167, 244, 35);
+        border-radius: 7px;
+        color: white;
+        font-size: 1.3rem;
+        padding: 15px;
+        margin-top: 20px;
+      }
+      .mainbtn {
+        padding: 10px 20px;
+        border-radius: 20px;
+        border: 5px solid #2980b9;
+        background: #ecf0f1;
+        font-size: 1rem;
+      }
+      .time {
+        font: 1.3em sans-serif;
+        padding: 10px;
+        border: 5px solid #2980b9;
+        border-radius: 100%;
+        background-color: white;
+      }
+      #resetbtn {
+        padding: 10px 20px;
+        border-radius: 20px;
+        border: 5px solid #2980b9;
+        background: #ecf0f1;
+        font-size: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="maindiv">
+      <div class="center">
+        <h1 id="welcomeMsg">Welcome to the Typometer</h1>
+        <h2 id="msg"></h2>
+        <textarea
+          id="mywords"
+          cols="100"
+          rows="10"
+          placeholder="Type from here!"
+        ></textarea
+        ><br /><br />
+
+        <button id="btn" class="mainbtn">Start</button>
+        <span class="time" id="timer">0</span>
+        <button id="resetbtn" class="mainbtn">Reset</button>
+      </div>
+    </div>
+
+    <script>
+      const setOfWords = [
+        "The sun dipped below the horizon, casting a soft golden glow over the rippling waves. The air was filled with the scent of saltwater, and the distant cry of seagulls echoed in the cool breeze. As the sky darkened, the stars began to twinkle, one by one, forming constellations that had guided sailors for centuries. The world seemed to pause, as if holding its breath in awe of the tranquil beauty.",
+
+        "It was a cold, clear night when they arrived at the old house at the end of the lane. The wind howled through the trees, making the branches creak like the groaning of a forgotten spirit. A single light flickered from an upstairs window, casting an eerie glow over the front yard. They exchanged wary glances, but there was no turning back. The mystery was waiting, and they had come to solve it.",
+
+        "There are several ways to approach the concept of sustainability. It begins with the recognition that the environment is finite and must be managed carefully to ensure its longevity. Renewable resources, such as solar and wind energy, offer promising alternatives to fossil fuels. Individuals and businesses alike must adopt practices that reduce waste, conserve energy, and prioritize long-term ecological health over short-term gains.",
+
+        "In the modern world, technology has become an indispensable part of our lives. From communication to entertainment, it shapes our daily activities in profound ways. However, it is essential that we strike a balance. While technology enhances convenience and efficiency, we must be cautious of its impact on our mental health and social connections. Limiting screen time, fostering in-person interactions, and prioritizing physical well-being are crucial steps toward a healthier relationship with technology.",
+
+        "I woke up late this morning and didn’t have time for breakfast, so I grabbed a coffee on my way to work. Traffic was as awful as usual, but I managed to make it to the office just in time for the meeting. The day went by quickly, filled with calls and emails. By the time I got home, I was exhausted. Still, it was a good day overall, and I’m looking forward to a quiet evening with a book.",
+
+        "To begin the installation process, first ensure that your device meets the system requirements listed in the manual. Download the installation package from the official website, then run the setup program. Follow the on-screen instructions, making sure to select the correct destination folder for the program files. Once the installation is complete, restart your computer to finalize the setup.",
+
+        "The American Revolution was a pivotal moment in history, marking the birth of a new nation. After years of growing tensions between the American colonies and the British Crown, the conflict culminated in a series of battles, most notably the Siege of Yorktown in 1781. The eventual victory of the colonies, aided by France, led to the Treaty of Paris in 1783, which formally ended the war and recognized American independence.",
+      ];
+
+      const msg = document.getElementById("msg");
+      const typewords = document.getElementById("mywords");
+
+      const btn = document.getElementById("btn");
+      const reset = document.getElementById("resetbtn");
+
+      let Username;
+      const welcome = document.getElementById("welcomeMsg");
+
+      const h2Element = document.getElementById("msg");
+      reset.addEventListener("click", () => {
+        location.reload();
+      });
+      let seconds = 0;
+      let timerInterval;
+      // Function to start the timer
+      function startTimer() {
+        timerInterval = setInterval(function () {
+          seconds++;
+          document.getElementById("timer").innerText = seconds;
+        }, 1000);
+      }
+      function stopTimer() {
+        clearInterval(timerInterval); // Stop the timer
+      }
+
+      let startTime, endTime;
+
+      const playGame = () => {
+        let randomNum = Math.floor(Math.random() * setOfWords.length);
+        msg.innerHTML = setOfWords[randomNum];
+        let date = new Date();
+        startTime = date.getTime();
+        btn.innerText = "Done";
+      };
+
+      const endPlay = () => {
+        let date = new Date();
+        endTime = date.getTime();
+        let totalTime = (endTime - startTime) / 1000;
+
+        let totalstr = typewords.value;
+        let wordCount = wordCounter(totalstr);
+
+        let speed = Math.round((wordCount / totalTime) * 60);
+        let finalMsg = `You typed total at ${speed} words per minutes & `;
+
+        finalMsg += comparewords(msg.innerText, totalstr);
+        msg.innerText = finalMsg;
+      };
+
+      const comparewords = (str1, str2) => {
+        let word1 = str1.split(/\s+/);
+        let word2 = str2.split(/\s+/);
+        let correct = 0;
+        let errors = 0;
+
+        // Handle the starting word separately
+        if (word1[0] === word2[0]) {
+          h2Element.style.opacity = 1;
+          correct++;
+        } else {
+          errors++;
+        }
+
+        // Compare the rest of the words
+        for (let i = 1; i < word1.length; i++) {
+          if (word1[i] === word2[i]) {
+            h2Element.style.opacity = 1;
+            correct++;
+          } else {
+            errors++;
+          }
+        }
+        return `${correct} correct out of ${word2.length} words and the total number of words is ${word1.length}. `;
+      };
+      const wordCounter = (str) => {
+        let response = str.trim().split(/\s+/).length;
+
+        return response;
+      };
+
+      btn.addEventListener("click", function () {
+        if (this.innerText == "Start") {
+          Username = prompt("Enter you Name :");
+          welcome.textContent = `Welcome ${Username}, to the Typometer`;
+
+          typewords.disabled = false;
+          playGame();
+          startTimer();
+        } else if (this.innerText == "Done") {
+          typewords.disabled = true;
+          btn.innerText = "Start";
+          welcome.textContent = `Thank you ${Username}, Good Luck..!`;
+          welcome.style.color = "black";
+          endPlay();
+          stopTimer();
+        }
+      });
+    </script>
+  </body>
+</html>
